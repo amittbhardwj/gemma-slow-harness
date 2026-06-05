@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gemma-slow-harness"
+version = "0.5.0"
+description = "Local multi-pass agent harness for Gemma 4 12B on small Macs"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+gemma-harness = "harness.cli:main"

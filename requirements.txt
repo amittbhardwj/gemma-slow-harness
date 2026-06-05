@@ -1,0 +1,5 @@
+# Intentionally empty. The harness uses Python stdlib only.
+# Optional future upgrades:
+# rich
+# typer
+# sentence-transformers  # not recommended on 16 GB Mac while running 12B
