@@ -42,9 +42,9 @@ class LocalLLMClient:
         max_tokens = self.cfg.max_tokens if max_tokens is None else max_tokens
         if provider == "ollama":
             return self._chat_ollama(messages, temperature=temperature, max_tokens=max_tokens)
-        if provider == "openai":
+        if provider in {"openai", "lmstudio", "mlx"}:
             return self._chat_openai_compatible(messages, temperature=temperature, max_tokens=max_tokens)
-        raise LLMError(f"Unsupported provider: {self.cfg.provider}. Use 'ollama' or 'openai'.")
+        raise LLMError(f"Unsupported provider: {self.cfg.provider}. Use 'ollama', 'openai', 'lmstudio', or 'mlx'.")
 
     def _post_json(self, url: str, payload: dict[str, Any], headers: dict[str, str] | None = None) -> dict[str, Any]:
         data = json.dumps(payload).encode("utf-8")

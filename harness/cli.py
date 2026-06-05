@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 import argparse
+import os
 import sys
 from pathlib import Path
 
 from .agent import SlowHarnessAgent
-from .config import HarnessConfig
+from .config import PROFILE_DEFAULTS, HarnessConfig
 from .learning import LearningStore
 from .llm import LLMError, LocalLLMClient
 from .memory_policy import (
@@ -537,6 +538,11 @@ def cmd_skill(args: argparse.Namespace) -> int:
 
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="gemma-harness", description="Slow multi-pass harness for Gemma 4 12B on local Macs.")
+    p.add_argument(
+        "--profile",
+        choices=sorted(PROFILE_DEFAULTS),
+        help="Apply a built-in runtime profile. Env vars still override individual settings.",
+    )
     sub = p.add_subparsers(dest="cmd", required=True)
 
     doctor = sub.add_parser("doctor", help="Check local model connectivity.")
@@ -743,6 +749,8 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
+    if getattr(args, "profile", None):
+        os.environ["GEMMA_PROFILE"] = args.profile
     return args.func(args)
 
 

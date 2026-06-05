@@ -20,6 +20,33 @@ This makes a small local model much stronger on practical tasks like coding, ML 
 
 Use the built-in memory profiles instead of manually guessing context/KV settings.
 
+### Gemma 4 fast profile
+
+For quick Gemma 4 12B 4-bit smoke tests and low-latency local runs:
+
+```bash
+gemma-harness --profile gemma4-fast doctor
+gemma-harness --profile gemma4-fast ask "Summarize this repository in one sentence."
+```
+
+Equivalent key defaults:
+
+```bash
+export GEMMA_PROFILE=gemma4-fast
+export GEMMA_MODEL=gemma4:12b
+export GEMMA_NUM_CTX=4096
+export GEMMA_MAX_TOKENS=512
+export GEMMA_CANDIDATES=1
+export GEMMA_DEBATE_ROUNDS=0
+export GEMMA_OLLAMA_THINK=false
+```
+
+Explicit environment variables still override the profile, so you can do:
+
+```bash
+GEMMA_PROFILE=gemma4-fast GEMMA_MAX_TOKENS=128 gemma-harness doctor
+```
+
 ### Safe daily profile
 
 ```bash
@@ -332,6 +359,45 @@ Then:
 ```bash
 gemma-harness doctor
 ```
+
+### LM Studio smoke test
+
+The LM Studio script starts the local server if needed, loads the first installed LLM unless `LMSTUDIO_MODEL_KEY` is set, and checks the harness through LM Studio's OpenAI-compatible API:
+
+```bash
+bash scripts/smoke_lmstudio.sh
+```
+
+To target a specific downloaded model:
+
+```bash
+LMSTUDIO_MODEL_KEY=your-model-key bash scripts/smoke_lmstudio.sh
+```
+
+### MLX-LM smoke test
+
+If MLX-LM is installed, this starts an OpenAI-compatible MLX server for the cached or downloadable MLX Gemma 4 12B 4-bit model:
+
+```bash
+bash scripts/smoke_mlx_gemma4.sh
+```
+
+Defaults:
+
+```bash
+export MLX_MODEL=mlx-community/gemma-4-12B-it-4bit
+export MLX_PORT=8080
+```
+
+### Ollama Gemma 4 smoke test
+
+For a repeatable end-to-end Ollama check:
+
+```bash
+bash scripts/smoke_ollama_gemma4.sh
+```
+
+The script starts Ollama if needed, pulls `gemma4:12b` if missing, runs `doctor`, and then runs a short `ask`.
 
 ---
 
