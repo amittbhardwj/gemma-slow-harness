@@ -3,6 +3,7 @@ import subprocess
 
 from harness.config import HarnessConfig
 from harness.cli import _parse_json_array
+from harness.llm import LocalLLMClient
 from harness.repo_context import create_agents_template, load_repo_instructions
 from harness.patching import extract_unified_diff
 from harness.tools import ToolRegistry
@@ -35,6 +36,20 @@ def test_manifest_includes_codex_like_tools(tmp_path: Path):
     assert "repo_instructions" in manifest
     assert "git_checkpoint" in manifest
     assert "patch_apply" in manifest
+
+
+def test_ollama_payload_disables_thinking_by_default(monkeypatch, tmp_path: Path):
+    captured = {}
+
+    def fake_post_json(self, url, payload, headers=None):
+        captured["payload"] = payload
+        return {"message": {"content": "OK"}}
+
+    monkeypatch.setattr(LocalLLMClient, "_post_json", fake_post_json)
+    cfg = HarnessConfig(workspace=tmp_path, provider="ollama")
+    LocalLLMClient(cfg).chat([{"role": "user", "content": "hi"}])
+
+    assert captured["payload"]["think"] is False
 
 
 def test_git_status_non_repo(tmp_path: Path):

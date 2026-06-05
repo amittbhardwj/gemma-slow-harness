@@ -90,7 +90,7 @@ def cmd_doctor(args: argparse.Namespace) -> int:
                 {"role": "user", "content": "Reply with exactly: OK"},
             ],
             temperature=0.0,
-            max_tokens=20,
+            max_tokens=128,
         )
         print(f"Model response: {resp.content!r} ({resp.elapsed_sec:.2f}s)")
         if cfg.learning_enabled:

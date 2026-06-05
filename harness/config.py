@@ -75,6 +75,7 @@ class HarnessConfig:
     kv_cache_type: str = "q8_0"  # f16 | q8_0 | q4_0 for Ollama/llama.cpp-style runtimes
     flash_attention: bool = True
     context_budget_tokens: int = 0  # 0 = auto-budget from num_ctx/max_tokens
+    ollama_think: bool = False
 
     @classmethod
     def from_env(cls) -> "HarnessConfig":
@@ -108,6 +109,7 @@ class HarnessConfig:
             kv_cache_type=os.getenv("OLLAMA_KV_CACHE_TYPE", os.getenv("GEMMA_KV_CACHE_TYPE", "q8_0")).strip(),
             flash_attention=_env_bool("OLLAMA_FLASH_ATTENTION", _env_bool("GEMMA_FLASH_ATTENTION", True)),
             context_budget_tokens=_env_int("GEMMA_CONTEXT_BUDGET_TOKENS", 0),
+            ollama_think=_env_bool("GEMMA_OLLAMA_THINK", False),
         )
 
     def summary(self) -> str:
@@ -119,5 +121,6 @@ class HarnessConfig:
             f"allow_mac_control={self.allow_mac_control}, allow_mac_screenshot={self.allow_mac_screenshot}, "
             f"learning_enabled={self.learning_enabled}, memory_top_k={self.memory_top_k}, skill_top_k={self.skill_top_k}, "
             f"memory_profile={self.memory_profile}, kv_cache_type={self.kv_cache_type}, "
-            f"flash_attention={self.flash_attention}, context_budget_tokens={self.context_budget_tokens}"
+            f"flash_attention={self.flash_attention}, context_budget_tokens={self.context_budget_tokens}, "
+            f"ollama_think={self.ollama_think}"
         )

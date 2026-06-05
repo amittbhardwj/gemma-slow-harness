@@ -67,6 +67,7 @@ class LocalLLMClient:
             "model": self.cfg.model,
             "messages": messages,
             "stream": False,
+            "think": self.cfg.ollama_think,
             "options": {
                 "temperature": temperature,
                 "num_predict": max_tokens,
