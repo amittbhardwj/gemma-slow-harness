@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "gemma-slow-harness"
 version = "0.5.0"
-description = "Local multi-pass agent harness for Gemma 4 12B on small Macs"
+description = "Mac-first local coding harness for small repo-aware 4-bit models"
 requires-python = ">=3.10"
 dependencies = []
 

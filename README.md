@@ -1,8 +1,10 @@
 # Gemma Slow Harness
 
-A lightweight **local agent harness** designed to make **Gemma 4 12B 4-bit** more useful on a **Mac mini M4 base model with 16 GB unified memory**.
+A **Mac-first local coding harness** that turns small 4-bit models, especially **Gemma 4 12B**, into safer repo-aware assistants for real project work.
 
-The goal is not to make a 12B model magically equal a frontier model. The goal is to use **slow test-time compute**:
+Most local-model tools stop at "the model runs." This project focuses on the next problem: making a small local model useful inside a repository without melting a 16 GB Mac, hallucinating blindly, or getting unsafe write/shell access by default.
+
+The goal is not to make a 12B model magically equal a frontier model. The goal is to make local models more dependable by combining **runtime profiles**, **repo context**, **safe tools**, and **slow test-time compute**:
 
 - plan first
 - generate multiple candidate answers
@@ -13,6 +15,18 @@ The goal is not to make a 12B model magically equal a frontier model. The goal i
 - optionally use local tools for files and Python execution
 
 This makes a small local model much stronger on practical tasks like coding, ML scripts, document Q&A, project planning, and cost-modeling workflows.
+
+## Project thesis
+
+Local 4-bit models are now good enough to be useful, but the surrounding workflow is still fragile. The main goal of this project is to become a practical workbench for developers who want to use small local models on real repositories:
+
+- Mac-first defaults for 16 GB Apple Silicon machines
+- repeatable Ollama, LM Studio, and MLX smoke tests
+- repo-aware prompting and lightweight local RAG
+- safe file, patch, Python, git, and macOS tool gates
+- measurable slow-compute workflows that improve answers beyond one-shot prompting
+
+This is intentionally **not** a general LangChain-style agent framework, a cloud AI service, or a benchmark-chasing demo. The strongest niche is narrow: make small local coding models reliable enough for day-to-day repo work.
 
 ---
 

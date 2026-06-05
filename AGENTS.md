@@ -3,7 +3,9 @@
 Instructions for local AI coding agents working in this repository.
 
 ## Project
-- Lightweight Python CLI harness for local Gemma/Ollama slow-reasoning workflows on small Macs.
+- Mac-first Python CLI harness that turns small local 4-bit models into safer repo-aware coding assistants.
+- The project should stay focused on practical local developer workflows: runtime profiles, repo context, safe tools, and measurable slow-compute improvements.
+- Avoid drifting into a generic agent framework. The niche is reliable local coding work on consumer Macs.
 - Keep the harness dependency-light and offline-testable.
 - Prefer stdlib, SQLite, pathlib, subprocess, and pytest over heavy services or frameworks.
 
