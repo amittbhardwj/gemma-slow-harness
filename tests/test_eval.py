@@ -18,6 +18,20 @@ def test_load_eval_tasks_jsonl(tmp_path: Path):
     assert tasks == [EvalTask(name="task", prompt="do it", success_criteria="must work", tags=["repo"])]
 
 
+def test_example_eval_task_files_load():
+    root = Path(__file__).resolve().parents[1]
+
+    repo_tasks = load_eval_tasks(root / "examples" / "eval" / "repo_maintenance.jsonl")
+    creative_tasks = load_eval_tasks(root / "examples" / "eval" / "creative_build_tasks.jsonl")
+
+    assert len(repo_tasks) == 2
+    assert [task.name for task in creative_tasks] == [
+        "landing_page_website",
+        "flappy_bird_game",
+        "eiffel_tower_image_prompt",
+    ]
+
+
 def test_load_eval_tasks_requires_fields(tmp_path: Path):
     path = tmp_path / "tasks.jsonl"
     path.write_text('{"name":"missing prompt"}\n', encoding="utf-8")

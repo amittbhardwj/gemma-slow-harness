@@ -62,6 +62,10 @@ Each eval task compares:
 
 Results are written as JSONL under `.gemma_harness/evals/` by default, with scores and verdicts such as `harness improves baseline` or `harness near reference`.
 
+Example checked-in reports:
+
+- [Creative build eval, 2026-06-05](reports/evals/creative_build_eval_2026-06-05.md)
+
 ---
 
 ## Recommended Mac mini M4 16 GB settings
