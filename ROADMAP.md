@@ -5,6 +5,7 @@ Gemma Slow Harness should stay focused on one promise: make small local 4-bit mo
 ## Near term
 
 - Improve repo-context injection for `ask` and `deep` so the model sees the right files by default.
+- Expand the frontier-approximation eval suite with real repo maintenance, bug-fix, and documentation tasks.
 - Add runtime smoke coverage for Ollama, LM Studio, and MLX without requiring those services in unit tests.
 - Track run timings and model metadata so slow-compute improvements are measurable.
 - Keep Mac memory profiles conservative and easy to reproduce.
@@ -12,6 +13,7 @@ Gemma Slow Harness should stay focused on one promise: make small local 4-bit mo
 ## Medium term
 
 - Add a compact benchmark suite comparing one-shot answers with multi-pass harness answers on repo tasks.
+- Add optional reference-model comparison so local harness runs can be measured against frontier outputs.
 - Make the tool loop better at proposing patches while keeping write/shell access gated.
 - Improve saved skills so repeated workflows become lightweight local playbooks, not opaque agent state.
 - Add clearer failure reports for unsupported model/runtime combinations.

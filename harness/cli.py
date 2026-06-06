@@ -3,10 +3,12 @@ from __future__ import annotations
 import argparse
 import os
 import sys
+from datetime import UTC, datetime
 from pathlib import Path
 
 from .agent import SlowHarnessAgent
 from .config import PROFILE_DEFAULTS, HarnessConfig
+from .eval import FrontierEvalRunner, format_eval_summary, load_eval_tasks, write_eval_results
 from .learning import LearningStore
 from .llm import LLMError, LocalLLMClient
 from .memory_policy import (
@@ -487,6 +489,44 @@ def cmd_code(args: argparse.Namespace) -> int:
     return 0
 
 
+def _reference_config_from_args(args: argparse.Namespace, cfg: HarnessConfig) -> HarnessConfig | None:
+    if not args.reference_provider:
+        return None
+    return HarnessConfig(
+        provider=args.reference_provider,
+        model=args.reference_model,
+        base_url=args.reference_base_url.rstrip("/"),
+        api_key=args.reference_api_key,
+        temperature=0.1,
+        max_tokens=args.reference_max_tokens,
+        num_ctx=cfg.num_ctx,
+        request_timeout_sec=args.reference_timeout,
+        candidates=1,
+        debate_rounds=0,
+        workspace=cfg.workspace,
+        learning_enabled=False,
+    )
+
+
+def cmd_eval(args: argparse.Namespace) -> int:
+    cfg = HarnessConfig.from_env()
+    tasks = load_eval_tasks(Path(args.tasks).expanduser().resolve())
+    if args.limit is not None:
+        tasks = tasks[: args.limit]
+    reference_cfg = _reference_config_from_args(args, cfg)
+    runner = FrontierEvalRunner(cfg, reference_cfg=reference_cfg)
+    results = runner.run(tasks, use_rag=not args.no_rag, use_learning=args.use_learning)
+    if args.output:
+        out = Path(args.output).expanduser().resolve()
+    else:
+        stamp = datetime.now(UTC).strftime("%Y%m%d-%H%M%S")
+        out = cfg.workspace / ".gemma_harness" / "evals" / f"frontier-eval-{stamp}.jsonl"
+    write_eval_results(out, results)
+    print(format_eval_summary(results))
+    print(f"Saved results: {out}")
+    return 0
+
+
 def cmd_skill(args: argparse.Namespace) -> int:
     cfg = HarnessConfig.from_env()
     store = LearningStore(cfg)
@@ -709,6 +749,20 @@ def build_parser() -> argparse.ArgumentParser:
     code.add_argument("--timeout", type=int, default=120)
     code.add_argument("--no-patch", action="store_true", help="Hide patch body in output.")
     code.set_defaults(func=cmd_code)
+
+    eval_p = sub.add_parser("eval", help="Compare one-shot local, harness, and optional reference answers on repo tasks.")
+    eval_p.add_argument("--tasks", required=True, help="JSONL eval task file.")
+    eval_p.add_argument("--output", help="Write JSONL results to this path. Defaults to .gemma_harness/evals/.")
+    eval_p.add_argument("--limit", type=int, help="Run only the first N tasks for quick local smoke tests.")
+    eval_p.add_argument("--no-rag", action="store_true", help="Disable indexed workspace retrieval for harness runs.")
+    eval_p.add_argument("--use-learning", action="store_true", help="Allow saved learning memory and skills during harness runs.")
+    eval_p.add_argument("--reference-provider", choices=["openai", "lmstudio", "mlx"], help="Optional reference provider for frontier comparison.")
+    eval_p.add_argument("--reference-model", default="gpt-5.5", help="Reference model name/identifier.")
+    eval_p.add_argument("--reference-base-url", default="https://api.openai.com/v1", help="Reference OpenAI-compatible base URL.")
+    eval_p.add_argument("--reference-api-key", default=os.getenv("OPENAI_API_KEY", ""), help="Reference API key.")
+    eval_p.add_argument("--reference-max-tokens", type=int, default=1536)
+    eval_p.add_argument("--reference-timeout", type=int, default=600)
+    eval_p.set_defaults(func=cmd_eval)
 
     skill = sub.add_parser("skill", help="Save, inspect, and reuse common workflows.")
     skill_sub = skill.add_subparsers(dest="skill_cmd", required=True)

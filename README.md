@@ -28,6 +28,40 @@ Local 4-bit models are now good enough to be useful, but the surrounding workflo
 
 This is intentionally **not** a general LangChain-style agent framework, a cloud AI service, or a benchmark-chasing demo. The strongest niche is narrow: make small local coding models reliable enough for day-to-day repo work.
 
+## Frontier approximation loop
+
+The long-term target is **GPT-5.5-like results on narrow repository tasks**, not GPT-5.5-level general intelligence. The harness approaches that target by measuring whether structured local runs beat one-shot local prompting and how close they get to an optional frontier/reference answer.
+
+Run the included repo-maintenance eval:
+
+```bash
+gemma-harness --profile gemma4-fast eval --tasks examples/eval/repo_maintenance.jsonl --no-rag
+```
+
+For a quick one-task smoke:
+
+```bash
+gemma-harness --profile gemma4-fast eval --tasks examples/eval/repo_maintenance.jsonl --limit 1 --no-rag
+```
+
+With an OpenAI-compatible reference model:
+
+```bash
+gemma-harness --profile gemma4-fast eval \
+  --tasks examples/eval/repo_maintenance.jsonl \
+  --reference-provider openai \
+  --reference-model "$GEMMA_REFERENCE_MODEL" \
+  --reference-api-key "$OPENAI_API_KEY"
+```
+
+Each eval task compares:
+
+- **baseline**: one-shot local model answer
+- **harness**: planned multi-pass local answer with judge/repair
+- **reference**: optional frontier or stronger model answer
+
+Results are written as JSONL under `.gemma_harness/evals/` by default, with scores and verdicts such as `harness improves baseline` or `harness near reference`.
+
 ---
 
 ## Recommended Mac mini M4 16 GB settings
